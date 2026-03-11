@@ -130,8 +130,13 @@ const updateTaskSchema = Joi.object({
       'date.base': 'Due date must be a valid ISO date string',
       'date.min': 'Due date cannot be in the past',
     }),
+  reopenReason: Joi.string().trim().min(1).max(500).optional()
+    .messages({
+      'string.empty': 'Reopen reason cannot be empty',
+      'string.max': 'Reopen reason must not exceed 500 characters',
+    }),
 }).min(1).messages({
-  'object.min': 'At least one field (title, description, status, priority, dueDate) must be provided',
+  'object.min': 'At least one field must be provided',
 });
 
 const taskIdSchema = Joi.object({

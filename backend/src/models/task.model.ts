@@ -1,6 +1,13 @@
 export type TaskStatus = 'pending' | 'in-progress' | 'completed';
 export type TaskPriority = 'low' | 'medium' | 'high';
 
+export interface StatusHistoryEntry {
+  from: TaskStatus;
+  to: TaskStatus;
+  reason?: string;
+  timestamp: string;
+}
+
 export interface Task {
   id: string;
   title: string;
@@ -8,6 +15,7 @@ export interface Task {
   status: TaskStatus;
   priority: TaskPriority;
   dueDate: string | null;
+  statusHistory: StatusHistoryEntry[];
   createdAt: string;
   updatedAt: string;
 }
@@ -26,4 +34,5 @@ export interface UpdateTaskDto {
   status?: TaskStatus;
   priority?: TaskPriority;
   dueDate?: string | null;
+  reopenReason?: string;
 }
