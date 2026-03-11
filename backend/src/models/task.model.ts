@@ -7,6 +7,7 @@ export interface Task {
   description: string;
   status: TaskStatus;
   priority: TaskPriority;
+  dueDate: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -16,6 +17,7 @@ export interface CreateTaskDto {
   description?: string;
   status?: TaskStatus;
   priority?: TaskPriority;
+  dueDate?: string;
 }
 
 export interface UpdateTaskDto {
@@ -23,4 +25,5 @@ export interface UpdateTaskDto {
   description?: string;
   status?: TaskStatus;
   priority?: TaskPriority;
+  dueDate?: string | null;
 }

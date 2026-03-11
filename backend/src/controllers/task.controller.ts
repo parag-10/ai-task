@@ -34,7 +34,7 @@ export const getAllTasks = (req: Request, res: Response, _next: NextFunction): v
   const sortBy = (req.query.sortBy as string) || 'createdAt';
   const order = (req.query.order as string) || 'desc';
 
-  const validSortFields = ['title', 'status', 'priority', 'createdAt', 'updatedAt'];
+  const validSortFields = ['title', 'status', 'priority', 'dueDate', 'createdAt', 'updatedAt'];
   if (validSortFields.includes(sortBy)) {
     tasks.sort((a, b) => {
       const fieldA = a[sortBy as keyof Task] ?? '';
@@ -86,7 +86,7 @@ export const getTaskById = (req: Request, res: Response, next: NextFunction): vo
 
 // POST /api/tasks
 export const createTask = (req: Request, res: Response, _next: NextFunction): void => {
-  const { title, description, status, priority }: CreateTaskDto = req.body;
+  const { title, description, status, priority, dueDate }: CreateTaskDto = req.body;
 
   const now = new Date().toISOString();
 
@@ -96,6 +96,7 @@ export const createTask = (req: Request, res: Response, _next: NextFunction): vo
     description: description?.trim() || '',
     status: status || 'pending',
     priority: priority || 'medium',
+    dueDate: dueDate || null,
     createdAt: now,
     updatedAt: now,
   };
@@ -116,7 +117,7 @@ export const updateTask = (req: Request, res: Response, next: NextFunction): voi
     return next(new AppError(`Task not found with id: ${req.params.id}`, 404));
   }
 
-  const { title, description, status, priority }: UpdateTaskDto = req.body;
+  const { title, description, status, priority, dueDate }: UpdateTaskDto = req.body;
 
   const updates: Partial<Task> = { updatedAt: new Date().toISOString() };
 
@@ -124,6 +125,24 @@ export const updateTask = (req: Request, res: Response, next: NextFunction): voi
   if (description !== undefined) updates.description = description.trim();
   if (status !== undefined) updates.status = status;
   if (priority !== undefined) updates.priority = priority;
+  if (dueDate !== undefined) updates.dueDate = dueDate || null;
+
+  // Cross-field check: resolved priority (new or existing) + resolved dueDate
+  const resolvedPriority = priority ?? existing.priority;
+  const resolvedDueDate = dueDate !== undefined ? updates.dueDate : existing.dueDate;
+
+  if (resolvedPriority === 'high') {
+    if (!resolvedDueDate) {
+      return next(new AppError('High priority tasks must have a due date', 400));
+    }
+    const due = new Date(resolvedDueDate + 'T00:00:00.000Z');
+    const sevenDays = new Date();
+    sevenDays.setDate(sevenDays.getDate() + 7);
+    sevenDays.setHours(23, 59, 59, 999);
+    if (due > sevenDays) {
+      return next(new AppError('High priority tasks must have a due date within the next 7 days', 400));
+    }
+  }
 
   const updated = taskDb.update(req.params.id, updates);
 

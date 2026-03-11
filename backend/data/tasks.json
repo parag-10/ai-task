@@ -7,5 +7,15 @@
     "priority": "low",
     "createdAt": "2026-03-11T12:39:41.940Z",
     "updatedAt": "2026-03-11T12:41:16.012Z"
+  },
+  {
+    "id": "45a5549f-d9f9-4ff8-be02-f9629f1ce147",
+    "title": "Urgent task",
+    "description": "",
+    "status": "pending",
+    "priority": "high",
+    "dueDate": "2026-03-12T00:00:00.000Z",
+    "createdAt": "2026-03-11T12:59:57.377Z",
+    "updatedAt": "2026-03-11T12:59:57.377Z"
   }
 ]
