@@ -10,13 +10,17 @@ export const errorHandler = (
   // Handle known operational errors
   if (err instanceof AppError) {
     console.error(`[AppError] ${err.statusCode}: ${err.message}`);
-    res.status(err.statusCode).json({
+
+    const response: Record<string, unknown> = {
       success: false,
       error: {
         message: err.message,
         statusCode: err.statusCode,
+        ...(err.details && { details: err.details }),
       },
-    });
+    };
+
+    res.status(err.statusCode).json(response);
     return;
   }
 

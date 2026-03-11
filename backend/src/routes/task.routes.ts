@@ -10,14 +10,15 @@ import {
   validateCreateTask,
   validateUpdateTask,
   validateTaskId,
+  sanitizeBody,
 } from '../middleware/validateTask';
 
 const router = Router();
 
 router.get('/', getAllTasks);
 router.get('/:id', validateTaskId, getTaskById);
-router.post('/', validateCreateTask, createTask);
-router.put('/:id', validateTaskId, validateUpdateTask, updateTask);
+router.post('/', sanitizeBody, validateCreateTask, createTask);
+router.put('/:id', validateTaskId, sanitizeBody, validateUpdateTask, updateTask);
 router.delete('/:id', validateTaskId, deleteTask);
 
 export default router;

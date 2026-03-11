@@ -37,7 +37,19 @@ app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 
 // ── Request Logging ──────────────────────────────────────────
-app.use(morgan('dev'));
+morgan.token('exec-time', (_req, res) => {
+  const startTime = res.getHeader('X-Request-Start');
+  if (!startTime) return '0';
+  return String(Date.now() - Number(startTime));
+});
+
+// Capture request start time
+app.use((_req: Request, res: Response, next: NextFunction) => {
+  res.setHeader('X-Request-Start', String(Date.now()));
+  next();
+});
+
+app.use(morgan('[:method] :url - Execution time: :exec-time ms'));
 
 // ── Routes ───────────────────────────────────────────────────
 app.use('/', healthRoutes);

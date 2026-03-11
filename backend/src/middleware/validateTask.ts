@@ -2,6 +2,43 @@ import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
 import { AppError } from '../utils/AppError';
 
+// ── Sanitization Helpers ─────────────────────────────────────
+
+const stripHtml = (str: string): string => str.replace(/<[^>]*>/g, '');
+
+const sanitizeValue = (val: unknown): unknown => {
+  if (typeof val === 'string') {
+    return stripHtml(val).trim();
+  }
+  if (Array.isArray(val)) {
+    return val.map(sanitizeValue);
+  }
+  if (val !== null && typeof val === 'object') {
+    return sanitizeObject(val as Record<string, unknown>);
+  }
+  return val;
+};
+
+const sanitizeObject = (obj: Record<string, unknown>): Record<string, unknown> => {
+  const cleaned: Record<string, unknown> = {};
+  for (const key of Object.keys(obj)) {
+    cleaned[key] = sanitizeValue(obj[key]);
+  }
+  return cleaned;
+};
+
+/**
+ * Middleware: sanitizes all string values in req.body
+ * - Strips HTML tags to prevent XSS
+ * - Trims leading/trailing whitespace
+ */
+export const sanitizeBody = (req: Request, _res: Response, next: NextFunction): void => {
+  if (req.body && typeof req.body === 'object') {
+    req.body = sanitizeObject(req.body);
+  }
+  next();
+};
+
 // ── Joi Schemas ──────────────────────────────────────────────
 
 const taskStatusValues = ['pending', 'in-progress', 'completed'] as const;
@@ -111,8 +148,16 @@ export const validateCreateTask = (req: Request, _res: Response, next: NextFunct
   const { error, value } = createTaskSchema.validate(req.body, { abortEarly: false, stripUnknown: true });
 
   if (error) {
-    const message = error.details.map((d) => d.message).join('; ');
-    return next(new AppError(message, 400));
+    const details = error.details.map((d) => ({
+      field: d.path.join('.') || 'body',
+      message: d.message,
+      type: d.type,
+    }));
+    return next(new AppError(
+      error.details.map((d) => d.message).join('; '),
+      400,
+      details
+    ));
   }
 
   req.body = value;
@@ -123,8 +168,16 @@ export const validateUpdateTask = (req: Request, _res: Response, next: NextFunct
   const { error, value } = updateTaskSchema.validate(req.body, { abortEarly: false, stripUnknown: true });
 
   if (error) {
-    const message = error.details.map((d) => d.message).join('; ');
-    return next(new AppError(message, 400));
+    const details = error.details.map((d) => ({
+      field: d.path.join('.') || 'body',
+      message: d.message,
+      type: d.type,
+    }));
+    return next(new AppError(
+      error.details.map((d) => d.message).join('; '),
+      400,
+      details
+    ));
   }
 
   // Validate dueDate is real and not in past
