@@ -1,24 +1,47 @@
 import { Request, Response, NextFunction } from 'express';
-
-interface CustomError extends Error {
-  statusCode?: number;
-}
+import { AppError } from '../utils/AppError';
 
 export const errorHandler = (
-  err: CustomError,
-  req: Request,
+  err: Error,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ): void => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
+  // Handle known operational errors
+  if (err instanceof AppError) {
+    console.error(`[AppError] ${err.statusCode}: ${err.message}`);
+    res.status(err.statusCode).json({
+      success: false,
+      error: {
+        message: err.message,
+        statusCode: err.statusCode,
+      },
+    });
+    return;
+  }
 
-  console.error(`[Error] ${statusCode}: ${message}`);
+  // Handle JSON parse errors (malformed request body)
+  if (err instanceof SyntaxError && 'body' in err) {
+    console.error(`[SyntaxError] 400: ${err.message}`);
+    res.status(400).json({
+      success: false,
+      error: {
+        message: 'Invalid JSON in request body',
+        statusCode: 400,
+      },
+    });
+    return;
+  }
 
-  res.status(statusCode).json({
+  // Handle unexpected errors
+  console.error(`[Error] 500: ${err.message}`);
+  console.error(err.stack);
+
+  res.status(500).json({
+    success: false,
     error: {
-      message,
-      statusCode,
+      message: 'Internal Server Error',
+      statusCode: 500,
     },
   });
 };

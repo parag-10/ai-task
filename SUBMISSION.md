@@ -2,7 +2,7 @@
 
 ## Track Chosen
 <!-- Mark your choice with [x] -->
-- [ ] Backend Only
+- [X] Backend Only
 - [ ] Frontend Only
 - [ ] Full-Stack (Both)
 
@@ -14,17 +14,17 @@
 ## Key Prompts Used
 <!-- List 3-5 important prompts you used with your AI assistant -->
 
-1. [Example: "Create a RESTful API endpoint for creating ..."]
-2. [Example: "How to implement reactive forms in Angular with ..."]
-3. [Example: "Debug TypeScript error in task service HTTP request"]
+1. Analyze current folder structure
+2. i need to create a Task Management Rest api with in-memory file based database.
+3. 
 4. 
 5. 
 
 ## Design Decisions (optional)
 <!-- Explain key architectural or implementation decisions you made and why -->
 
-- **Decision 1:** [e.g., "Used a singleton service for in-memory task storage"]
-  - **Reasoning:** [e.g., "To maintain state consistency across API calls without a database"]
+- **Decision 1:** Implement some validator library based validation like joi
+  - **Reasoning:** [e.g., AI generated code for me with js comparision of values, but as time goes and features increases then it will increase complexity in maintaining those validations]
 
 - **Decision 2:** [e.g., "Implemented reactive forms instead of template-driven"]
   - **Reasoning:** [e.g., "Better type safety and validation control"]
