@@ -10,8 +10,8 @@ import {
   validateCreateTask,
   validateUpdateTask,
   validateTaskId,
-  sanitizeBody,
 } from '../middleware/validateTask';
+import { sanitizeBody } from '../middleware/sanitize';
 
 const router = Router();
 

@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { AppError } from '../utils/AppError';
 
 export class FileDb<T extends { id: string }> {
   private filePath: string;
@@ -42,6 +43,17 @@ export class FileDb<T extends { id: string }> {
 
   findById(id: string): T | undefined {
     return this.data.find((item) => item.id === id);
+  }
+
+  /**
+   * Returns the item with the given id, or throws a 404 AppError.
+   */
+  findByIdOrFail(id: string, label = 'Resource'): T {
+    const item = this.findById(id);
+    if (!item) {
+      throw new AppError(`${label} not found with id: ${id}`, 404);
+    }
+    return item;
   }
 
   create(item: T): T {

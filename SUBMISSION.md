@@ -9,14 +9,15 @@
 ## GitHub Copilot Usage Summary
 <!-- Describe how you used AI throughout the test. Be specific about when and how you leveraged AI tools. -->
 
-[Write your response here]
+I have used copilot in agent mode and model is Claude Opus 4.6
+Basically i distributed all the requirements into chunks and gave it to copilot and verified all the changes made. In some changes there was edge cases so i highlited that as well.
 
 ## Key Prompts Used
 <!-- List 3-5 important prompts you used with your AI assistant -->
 
 1. Analyze current folder structure
-2. i need to create a Task Management Rest api with in-memory file based database.
-3. 
+2. Do we have due date for task? If not then add it. And there should be one validation for the task that is task with high priority must have due date withinh 7 day.
+3. But there should be a case when user completed task and add another task in same as reopen. This action can hide the actual resolution of firstly created issue
 4. 
 5. 
 
@@ -26,8 +27,8 @@
 - **Decision 1:** Implement some validator library based validation like joi
   - **Reasoning:** [e.g., AI generated code for me with js comparision of values, but as time goes and features increases then it will increase complexity in maintaining those validations]
 
-- **Decision 2:** [e.g., "Implemented reactive forms instead of template-driven"]
-  - **Reasoning:** [e.g., "Better type safety and validation control"]
+- **Decision 2:** [e.g., "But there should be a case when user completed task and add another task in same as reopen. This action can hide the actual resolution of firstly created issue"]
+  - **Reasoning:** [e.g., "AI gererated code that was covering basic requirement but there was technical edge case which i found"]
 
 - **Decision 3:** 
   - **Reasoning:** 
